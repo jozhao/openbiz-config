@@ -1,0 +1,42 @@
+{
+    "name": "xing/openbiz-config",
+    "description": "Configuration for the OpenBiz Drupal Distribution",
+    "keywords": ["xing", "openbiz"],
+    "type": "composer-plugin",
+    "license": "Apache-2.0",
+    "authors": [
+        {
+            "name": "Joseph Zhao",
+            "email": "joseph.zhao@xing.net.au"
+        }
+    ],
+    "require": {
+        "composer-plugin-api": "^1.1",
+        "php": ">=5.6",
+        "phing/phing": "^2.15"
+
+    },
+    "require-dev": {
+        "composer/composer": "^1.4"
+    },
+    "extra": {
+        "class": "XiNG\\OpenBiz\\Config\\Composer\\Plugin"
+    },
+    "autoload": {
+        "psr-4": {
+            "XiNG\\OpenBiz\\Config\\": "src/",
+            "XiNG\\OpenBiz\\Deploy\\": "src/Deploy/"
+        }
+    },
+    "bin": [
+        "bin/openbiz"
+    ],
+    "conflict": {
+        "drupal/core": "7.*"
+    },
+    "suggest": {
+        "hirak/prestissimo": "^0.3"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

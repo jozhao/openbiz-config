@@ -1,0 +1,105 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * @file
+ * OpenBiz Command.
+ */
+
+$root_path = locate_root();
+
+if (empty($root_path)) {
+    print "Unable to find vendor path for OpenBiz\n";
+    exit(1);
+}
+
+$autoload = require_once $root_path . '/vendor/autoload.php';
+if (!isset($autoload)) {
+    print "Unable to find autoload classes for OpenBiz\n";
+    exit(1);
+}
+
+// Execute command.
+$params_string = implode(' ', array_slice($argv, 1));
+chdir($root_path);
+$phing = $root_path . '/vendor/phing/phing/bin/phing';
+array_splice($argv, 1, 0, ['-f', './vendor/xing/openbiz-config/phing/build.xml']);
+
+// @see vendor/bin/phing
+ini_set('html_errors', 'off');
+putenv("PHING_HOME=" . realpath(dirname($phing) . '/../'));
+
+require_once dirname($phing) . '/phing.php';
+
+/**
+ * @return mixed
+ */
+function locate_root()
+{
+    $possible_paths = [
+        $_SERVER['PWD'],
+        getcwd(),
+        realpath(__DIR__ . '/../'),
+        realpath(__DIR__ . '/../../../'),
+    ];
+    $needle = [
+        'vendor/bin/openbiz',
+        'vendor/autoload.php',
+    ];
+    foreach ($possible_paths as $possible_path) {
+        if ($root_path = find_directory_containing_files($possible_path, $needle)) {
+            return $root_path;
+        }
+    }
+    // bin folder is under project root.
+    $needle_bin = [
+        'bin/openbiz',
+        'vendor/autoload.php',
+    ];
+    foreach ($possible_paths as $possible_path) {
+        if ($root_path = find_directory_containing_files($possible_path, $needle_bin)) {
+            return $root_path;
+        }
+    }
+}
+
+/**
+ * @param     $working_directory
+ * @param     $files
+ * @param int $max_height
+ *
+ * @return bool|string
+ */
+function find_directory_containing_files($working_directory, $files, $max_height = 10)
+{
+    // Find the root directory of the git repository containing BLT.
+    // We traverse the file tree upwards $max_height times until we find
+    // vendor/bin/blt.
+    $file_path = $working_directory;
+    for ($i = 0; $i <= $max_height; $i++) {
+        if (files_exist($file_path, $files)) {
+            return $file_path;
+        } else {
+            $file_path = realpath($file_path . '/..');
+        }
+    }
+
+    return false;
+}
+
+/**
+ * @param $dir
+ * @param $files
+ *
+ * @return bool
+ */
+function files_exist($dir, $files)
+{
+    foreach ($files as $file) {
+        if (!file_exists($dir . '/' . $file)) {
+            return false;
+        }
+    }
+
+    return true;
+}

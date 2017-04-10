@@ -1,0 +1,59 @@
+<project name="setup" default="setup">
+
+    <!-- Default SETUP. -->
+    <target name="setup"
+            description="Install dependencies, builds docroot, installs Drupal."
+            depends="setup:build, setup:drupal:install">
+        <echo>For a full list of available Phing targets, run:</echo>
+        <echo>openbiz -l or openbiz --list</echo>
+        <echo></echo>
+    </target>
+
+    <!-- setup:composer:install must run prior to setup:drupal:settings to ensure that scaffold files are present. -->
+    <target name="setup:build"
+            description="Generates all required files for a full build"
+            depends="setup:composer:install">
+    </target>
+
+    <!-- Run composer install/update -->
+    <target name="setup:composer:install"
+            description="Installs project dependencies, including drupal core and contrib.">
+        <!-- Prefer distributions locally so that the downloaded archives are cached. -->
+        <exec dir="${project.root}"
+              command="export COMPOSER_EXIT_ON_PATCH_FAILURE=1; composer install --ansi --no-interaction"
+              logoutput="true" checkreturn="true" level="${openbiz.status_level}" passthru="true"/>
+    </target>
+
+    <!-- Run Drupal settings setup for each multisite. -->
+    <target name="setup:drupal:settings">
+        <foreach list="${multisite.name}" param="multisite.name" target="setup:drupal:settings:site"/>
+    </target>
+
+    <target name="setup:drupal:settings:site" description="Create local settings files using default settings files for an individual site." hidden="true">
+        <echo>Making ${docroot}/sites/${multisite.name} writable</echo>
+        <chmod mode="0755" file="${docroot}/sites/${multisite.name}" failonerror="false"/>
+    </target>
+
+    <!-- Install Drupal site. -->
+    <target name="setup:drupal:install"
+            description="Installs a specific Drupal site."
+            depends="setup:drupal:settings">
+
+        <!-- Set sites directory file permissions. -->
+        <echo level="verbose">Making ${docroot}/sites/default writable...</echo>
+        <chmod mode="0755" failonerror="false">
+            <fileset dir="${docroot}/sites/default">
+                <type type="dir"/>
+                <exclude name="files/**"/>
+            </fileset>
+        </chmod>
+        <chmod mode="0644" failonerror="false">
+            <fileset dir="${docroot}/sites/default">
+                <type type="file"/>
+                <exclude name="files/**"/>
+            </fileset>
+        </chmod>
+
+    </target>
+
+</project>

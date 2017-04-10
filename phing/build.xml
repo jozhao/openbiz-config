@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="OpenBiz" default="list">
+
+    <!-- Include custom task classes -->
+    <includepath classpath="${phing.dir}"/>
+    <taskdef name="drush" classname="phingcludes.DrushTask"/>
+
+    <!--Increase PHP memory limit. -->
+    <property name="php.memory_limit" value="2G" override="false"/>
+    <echo level="verbose">Setting memory allocation to ${php.memory_limit}</echo>
+    <php expression="ini_set('memory_limit', '${php.memory_limit}');" level="verbose"/>
+
+    <!-- Defines a list of default properties, available to all targets. -->
+    <import file="${phing.dir}/tasks/properties.xml"/>
+
+    <!-- Contains OpenBiz command tasks. -->
+    <import file="${phing.dir}/tasks/self.xml"/>
+
+    <!-- Contains targets used for setting up environment. E.g., installing Drupal. -->
+    <import file="${phing.dir}/tasks/setup.xml"/>
+
+    <!-- Contains local tasks. -->
+    <import file="${phing.dir}/tasks/local.xml"/>
+
+    <!-- List available commands. -->
+    <target name="list" hidden="true">
+        <exec dir="${openbiz.root}"
+              command="${project.root}/vendor/phing/phing/bin/phing -f ${phing.dir}/build.xml -q -l"
+              passthru="true"/>
+    </target>
+
+</project>

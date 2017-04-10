@@ -1,0 +1,10 @@
+project:
+  name: OpenBiz
+
+openbiz:
+  # Default verbosity level for <exec> tasks. If Phing msg level is => than info, this will be set to info.
+  status_level: verbose
+  # If Phing verbosity is flagged, this will be changed to true. Affects verbosity of tasks like Drush, Behat.
+  verbose: false
+  update:
+    ignore-existing-file: ${config.root}/scripts/update/ignore-existing.txt

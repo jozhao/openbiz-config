@@ -1,0 +1,45 @@
+<project name="self" default="update">
+
+    <!-- Finds required binaries. -->
+    <target name="env" hidden="true">
+        <if>
+            <not>
+                <available file="${drush}" property="drush.exists"/>
+            </not>
+            <then>
+                <exec command="which drush" outputProperty="drush"/>
+            </then>
+        </if>
+        <exec command="which composer" outputProperty="composer"/>
+        <exec command="which npm" outputProperty="npm"/>
+        <exec command="which rsync" outputProperty="rsync"/>
+        <exec command="which bzip2" outputProperty="bzip2"/>
+        <exec command="which bunzip2" outputProperty="bunzip2"/>
+
+        <echo message="Found Drush: ${drush}"/>
+        <echo message="Found Composer: ${composer}"/>
+        <echo message="Found NPM: ${npm}"/>
+        <echo message="Found rsync: ${rsync}"/>
+        <echo message="Found bzip2: ${bzip2}"/>
+        <echo message="Found bunzip2: ${bunzip2}"/>
+    </target>
+
+    <!-- Rsync the template to wokring directory. -->
+    <target name="rsync-template" depends="env" hidden="true">
+        <echo>Copying files from ${project.name} template into the project...</echo>
+        <exec dir="${project.root}"
+              command="rsync -a --no-g ${config.root}/template/ ${project.root}/ --exclude-from=${openbiz.update.ignore-existing-file}"
+              logoutput="true" checkreturn="true" level="${openbiz.status_level}" passthru="true"/>
+
+        <!--Rsync files without overwriting existing-->
+        <exec dir="${project.root}"
+              command="rsync -a --no-g ${config.root}/template/ ${project.root}/ --include-from=${openbiz.update.ignore-existing-file} --ignore-existing"
+              logoutput="true" checkreturn="true" level="${openbiz.status_level}" passthru="true"/>
+    </target>
+
+    <!-- Update the project. -->
+    <target name="update" depends="rsync-template" hidden="true">
+
+    </target>
+
+</project>

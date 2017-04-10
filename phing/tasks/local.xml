@@ -1,0 +1,7 @@
+<project name="local" default="local:setup">
+
+    <target name="local:refreshdb"
+            description="Refreshes local environment from upstream testing database.">
+    </target>
+
+</project>

@@ -1,0 +1,60 @@
+{
+    "repositories": {
+        "drupal": {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
+        }
+    },
+    "require": {
+        "composer/installers": "^1.2",
+        "wikimedia/composer-merge-plugin": "^1.4"
+    },
+    "require-dev": {
+        "cweagans/composer-patches": "^1.5.0",
+        "drupal-composer/drupal-scaffold": "^2.0.0",
+        "drupal/drupal-extension": "^3.2",
+        "phpunit/phpunit": "^4.8",
+        "squizlabs/php_codesniffer": "^2.8",
+        "jakoch/phantomjs-installer":   "2.1.1-p07"
+    },
+    "autoload": {
+        "psr-4": {
+            "XiNG\\OpenBiz\\Config\\": "src/"
+        }
+    },
+    "extra": {
+        "composer-exit-on-patch-failure": true,
+        "drupal-scaffold": {
+            "initial": {
+                "sites/default/default.services.yml": "sites/default/services.yml",
+                "sites/default/default.settings.php": "sites/default/settings.php"
+            },
+            "excludes": [
+                "sites/development.services.yml"
+            ]
+        },
+        "enable-patching": true,
+        "patches": {
+            "drupal/core": {
+                "Clear Twig caches on deploys": "https://www.drupal.org/files/issues/no_reliable_method-2752961-29.patch"
+            }
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "DrupalComposer\\DrupalScaffold\\Plugin::scaffold"
+        ],
+        "post-update-cmd": [
+            "DrupalComposer\\DrupalScaffold\\Plugin::scaffold"
+        ],
+        "nuke": [
+            "rm -rf vendor composer.lock",
+            "@composer clearcache",
+            "@composer install"
+        ],
+        "install-phantomjs": [
+            "rm -rf vendor/bin/phantomjs",
+            "PhantomInstaller\\Installer::installPhantomJS"
+        ]
+    }
+}

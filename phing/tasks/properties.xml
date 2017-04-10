@@ -1,0 +1,27 @@
+<project name="properties" default="build">
+
+    <!-- Locations of required binaries. -->
+    <property name="drush" value="${project.basedir}/bin/drush"/>
+    <property name="composer" value="/usr/local/bin/composer"/>
+    <property name="npm" value="/usr/local/bin/npm"/>
+    <property name="rsync" value="/usr/bin/rsync"/>
+    <property name="bzip2" value="/usr/bin/bzip2"/>
+    <property name="bunzip2" value="/usr/bin/bunzip2"/>
+
+    <!-- Project path -->
+    <property name="project.root.relative" value="${phing.dir}/../../../.." logoutput="false"/>
+    <resolvepath propertyName="project.root" file="${project.root.relative}"/>
+
+    <!-- Config path -->
+    <property name="config.root.relative" value="${phing.dir}/.." logoutput="false"/>
+    <resolvepath propertyName="config.root" file="${config.root.relative}"/>
+
+    <property name="openbiz.root.relative" value="${phing.dir}/.." logoutput="false"/>
+    <resolvepath propertyName="openbiz.root" file="${openbiz.root.relative}"/>
+
+    <property name="bin.path" value="vendor/bin" logoutput="false"/>
+
+    <!-- Load file directory and binary locations. -->
+    <property file="${phing.dir}/build.yml" override="true" logoutput="false"/>
+
+</project>
